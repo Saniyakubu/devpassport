@@ -1,26 +1,152 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-background: #030712;
+  --color-passport-navy: #0a1220;
+  --color-passport-navy-dark: #050811;
+  --color-passport-navy-light: #111d33;
+  --color-passport-gold: #b9922c;
+  --color-passport-gold-light: #f0d98c;
+  --color-passport-gold-dark: #866517;
+  --color-passport-paper: #f7f4eb;
+  --color-passport-paper-dark: #ece7d9;
+  
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-geist-sans), sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-glint: glint 8s ease-in-out infinite;
+  --animate-gold-sweep: gold-sweep 3s ease infinite;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotateX(1deg) rotateY(-1deg); }
+    50% { transform: translateY(-12px) rotateX(-1deg) rotateY(1deg); }
+  }
+  @keyframes glint {
+    0%, 40% { transform: translateX(-100%); }
+    60%, 100% { transform: translateX(100%); }
+  }
+  @keyframes gold-sweep {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 }
 
+/* Base resets and overrides */
+html {
+  background-color: #030712;
+  color: #f3f4f6;
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #030712;
+  font-family: var(--font-sans);
+}
+
+/* Custom Material Texture Overlays */
+
+/* Pure CSS Leather Cover Texture */
+.leather-cover {
+  background-color: #08101d;
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.05), transparent 70%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
+  background-blend-mode: multiply;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+/* Pure CSS Aged Cream Paper Texture */
+.paper-grain {
+  background-color: #f7f4eb;
+  background-image: 
+    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.6), transparent 80%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  background-blend-mode: multiply;
+  box-shadow: 
+    0 15px 30px -10px rgba(0, 0, 0, 0.4),
+    inset 0 0 40px rgba(139, 109, 51, 0.06);
+}
+
+/* Gold Foil Text & Border Sheen */
+.gold-foil {
+  background: linear-gradient(90deg, #b9922c, #f0d98c, #866517, #f0d98c, #b9922c);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gold-sweep 4s linear infinite;
+}
+
+.gold-foil-border {
+  border-image: linear-gradient(to right, #b9922c, #f0d98c, #866517, #f0d98c, #b9922c) 1;
+}
+
+/* Stamp Effect Inks */
+.stamp-ink-blue {
+  color: #1e3a8a;
+  border-color: rgba(30, 58, 138, 0.3);
+  background-color: rgba(239, 246, 255, 0.7);
+}
+
+.stamp-ink-rose {
+  color: #881337;
+  border-color: rgba(136, 19, 55, 0.3);
+  background-color: rgba(255, 241, 242, 0.7);
+}
+
+.stamp-ink-amber {
+  color: #78350f;
+  border-color: rgba(120, 53, 15, 0.3);
+  background-color: rgba(254, 243, 199, 0.7);
+}
+
+.stamp-ink-green {
+  color: #064e3b;
+  border-color: rgba(6, 78, 59, 0.3);
+  background-color: rgba(236, 253, 245, 0.7);
+}
+
+.stamp-ink-violet {
+  color: #4c1d95;
+  border-color: rgba(76, 29, 149, 0.3);
+  background-color: rgba(245, 243, 255, 0.7);
+}
+
+/* Custom premium scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #030712;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* react-pageflip responsiveness overrides */
+.stPageFlip {
+  position: relative !important;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+}
+
+/* Hide native controls during PDF export if needed */
+@media print {
+  .no-print {
+    display: none !important;
+  }
 }
