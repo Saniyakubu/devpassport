@@ -261,7 +261,7 @@ async function fetchPassportData(username: string): Promise<PassportData> {
 
 
 
-const MiniPassportCover = ({ color, title, label, tilt }: { color: string, title: string, label: string, tilt: string }) => (
+const MiniPassportCover = ({ color, title, tilt }: { color: string, title: string, tilt: string }) => (
   <div className={`flex flex-col items-center ${tilt} transition-transform duration-500 hover:scale-110 hover:-translate-y-2 hover:z-20 cursor-default select-none`}>
     <div 
       className="relative flex flex-col items-center w-[110px] h-[160px] rounded-r-xl rounded-l-sm shadow-[0_15px_35px_rgba(0,0,0,0.6)] border border-white/10"
@@ -286,7 +286,6 @@ const MiniPassportCover = ({ color, title, label, tilt }: { color: string, title
     </div>
     <div className="mt-4 bg-slate-900/90 backdrop-blur border border-slate-700/50 rounded-lg px-3 py-1.5 text-center shadow-xl">
       <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest">{title}</p>
-      <p className="text-[8px] text-slate-400 mt-0.5">{label}</p>
     </div>
   </div>
 );
@@ -397,27 +396,9 @@ export default function DeveloperPassportApp() {
     }
   };
 
-  // Switch styles depending on theme state
-  const getThemeClass = () => {
-    switch (theme) {
-      case "Cyberpunk": return "bg-black text-cyan-400 border-cyan-800";
-      case "Glass": return "bg-slate-900/30 backdrop-blur-xl border-white/10 text-white";
-      case "Terminal": return "bg-black text-green-500 border-green-800 font-mono";
-      case "Minimal": return "bg-white text-slate-900 border-slate-200 shadow-md";
-      case "Retro": return "bg-[#2a1b15] text-[#e0cfbe] border-[#4e2f20]";
-      case "GitHub Dark": return "bg-[#0d1117] text-[#c9d1d9] border-[#30363d]";
-      case "GitHub Light": return "bg-[#ffffff] text-[#24292f] border-[#d0d7de] shadow-sm";
-      default: return "bg-passport-navy-dark text-slate-200 border-slate-800"; // Classic
-    }
-  };
-
   return (
-    <main className={`relative min-h-screen overflow-x-hidden ${
-      theme === "GitHub Light" 
-        ? "bg-slate-50 text-slate-900" 
-        : "bg-[#030611] text-slate-100"
-    }`}>
-      <Toaster position="bottom-right" theme={theme.toLowerCase().includes("light") ? "light" : "dark"} />
+    <main className="relative min-h-screen overflow-x-hidden bg-[#030611] text-slate-100">
+      <Toaster position="bottom-right" theme="dark" />
       
       {loading && <LoaderScreen username={username} />}
       
@@ -432,7 +413,7 @@ export default function DeveloperPassportApp() {
 
       <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 py-8">
         {/* Top Navbar */}
-        <header className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 pb-6 border-b border-slate-800/40">
+        <header className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10 pb-6 border-b border-slate-800/40">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/10">
               <Shield className="w-5 h-5 text-slate-950" />
@@ -441,26 +422,6 @@ export default function DeveloperPassportApp() {
               <h1 className="text-xl font-serif tracking-wide text-amber-100 font-bold uppercase leading-none">Developer Passport</h1>
               <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 mt-1 block">GitHub Activity Ledger</span>
             </div>
-          </div>
-
-          {/* Theme switcher */}
-          <div className="flex flex-wrap items-center justify-center gap-1.5 p-1 bg-slate-900/60 border border-slate-800/80 rounded-full max-w-full overflow-x-auto">
-            {themes.map((t) => (
-              <button
-                key={t}
-                onClick={() => {
-                  setTheme(t);
-                  toast.info(`Theme switched to ${t}`);
-                }}
-                className={`px-3 py-1 text-[11px] font-sans font-bold uppercase tracking-wider rounded-full transition-all whitespace-nowrap ${
-                  t === theme
-                    ? "bg-amber-500 text-slate-950 shadow-md font-extrabold"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                {t.replace(" Passport", "")}
-              </button>
-            ))}
           </div>
         </header>
 
@@ -471,7 +432,6 @@ export default function DeveloperPassportApp() {
             <MiniPassportCover 
               color="#061A3A" 
               title="Standard Issue" 
-              label="For Active Developers" 
               tilt="-rotate-12"
             />
           </div>
@@ -479,19 +439,15 @@ export default function DeveloperPassportApp() {
             <MiniPassportCover 
               color="#6B1D25" 
               title="Elite Tier" 
-              label="Level 50+ / 5,000 XP" 
               tilt="rotate-12"
             />
           </div>
 
-          <span className="relative z-10 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-sans tracking-widest text-amber-500 uppercase font-black mb-6">
-            <Sparkles className="w-3.5 h-3.5" /> Premium Build Prompt v2
-          </span>
           <h2 className="text-5xl md:text-6xl font-serif text-white tracking-tight font-extrabold leading-none">
-            Your GitHub Journey, <span className="gold-foil">Beautifully Documented</span>
+            Developer <span className="gold-foil">Passports</span> & Cards
           </h2>
           <p className="mt-4 text-slate-400 text-base md:text-lg leading-relaxed max-w-[640px] mx-auto">
-            A handcrafted digital identity artifact. No mesh gradients, no generic layouts — just physical leather, paper weights, and gold leaf stamps.
+            A beautifully crafted digital identity artifact and shareable statistics cards for your GitHub profile.
           </p>
         </div>
 
@@ -571,38 +527,7 @@ export default function DeveloperPassportApp() {
         {/* ─────────────────────────────────────────────────────── */}
         <ShareableCardsSection data={data} handleExportCard={handleExportCard} />
 
-        {/* Informative Step Workflow */}
-        <section className="mb-20 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-2xl bg-slate-950/20 border border-slate-900/60">
-            <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 font-serif font-black text-lg mb-4">
-              1
-            </div>
-            <h4 className="text-lg font-serif text-white font-bold">Fetch Data</h4>
-            <p className="mt-2 text-slate-400 text-xs leading-relaxed">
-              We query the GitHub REST APIs to fetch your repos, stars, commit event cycles, and organizational metadata.
-            </p>
-          </div>
 
-          <div className="p-6 rounded-2xl bg-slate-950/20 border border-slate-900/60">
-            <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 font-serif font-black text-lg mb-4">
-              2
-            </div>
-            <h4 className="text-lg font-serif text-white font-bold">Interpret DNA</h4>
-            <p className="mt-2 text-slate-400 text-xs leading-relaxed">
-              Our analyzer interprets commits and repository language data to compute level points, coding streaks, and personas.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-slate-950/20 border border-slate-900/60">
-            <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 font-serif font-black text-lg mb-4">
-              3
-            </div>
-            <h4 className="text-lg font-serif text-white font-bold">Stamps & Badges</h4>
-            <p className="mt-2 text-slate-400 text-xs leading-relaxed">
-              Milestone clearing issues visa-style collector stamps directly onto page sheets. Perfect to print, export, or share.
-            </p>
-          </div>
-        </section>
 
         {/* Footer */}
         <footer className="pt-10 border-t border-slate-800/40 text-center text-xs text-slate-500 space-y-2">
