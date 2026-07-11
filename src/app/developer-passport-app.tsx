@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
 import { 
   Github, Download, Printer, Sparkles, Shield, 
   HelpCircle, Share2, Layers, RefreshCw, Star, 
@@ -35,6 +36,8 @@ type PassportData = {
   };
   stats: {
     repositories: number;
+    fetchedRepositories?: number;
+    ownedRepositories?: number;
     sourceRepositories: number;
     followers: number;
     following: number;
@@ -42,10 +45,22 @@ type PassportData = {
     forks: number;
     organizations: number;
     publicGists: number;
+    commits?: number;
+    commitsThisYear?: number;
     contributions: number;
     pullRequests: number;
     issues: number;
+    activeDaysThisYear?: number;
+    topRepoStars?: number;
   };
+  scouting: {
+    label: string;
+    value: number;
+    detail: string;
+    score: number;
+    source: string;
+  }[];
+  playstyles: string[];
   languages: { name: string; value: number; percent: number }[];
   stack: { name: string; strength: number; tools: string[] }[];
   level: { title: string; progress: number; next: string; xp: number };
@@ -72,6 +87,7 @@ type PassportData = {
   }[];
   timeline: { label: string; date: string; detail: string }[];
   interpretation: { headline: string; body: string };
+  dataSources?: Record<string, string | string[]>;
   generatedAt: string;
 };
 
@@ -105,6 +121,8 @@ const sampleData: PassportData = {
   },
   stats: {
     repositories: 42,
+    fetchedRepositories: 42,
+    ownedRepositories: 42,
     sourceRepositories: 31,
     followers: 8400,
     following: 9,
@@ -112,10 +130,25 @@ const sampleData: PassportData = {
     forks: 4200,
     organizations: 4,
     publicGists: 8,
+    commits: 1400,
+    commitsThisYear: 1400,
     contributions: 384,
     pullRequests: 12,
     issues: 7,
+    activeDaysThisYear: 184,
+    topRepoStars: 8210,
   },
+  scouting: [
+    { label: "Commits", value: 1400, detail: "1,400 commits", score: 84, source: "rest-search" },
+    { label: "Stars earned", value: 12870, detail: "12,870 stars", score: 99, source: "rest-repositories" },
+    { label: "Top repo reach", value: 8210, detail: "8,210 stars", score: 99, source: "rest-repositories" },
+    { label: "Pull requests", value: 12, detail: "12 PRs", score: 14, source: "rest-search" },
+    { label: "Followers", value: 8400, detail: "8,400 followers", score: 99, source: "rest-user" },
+    { label: "Languages", value: 5, detail: "5 languages", score: 50, source: "rest-languages" },
+    { label: "Contributions", value: 384, detail: "384 contributions", score: 15, source: "github-calendar-scrape" },
+    { label: "Account age", value: 15, detail: "15 yrs", score: 99, source: "rest-user" },
+  ],
+  playstyles: ["184 active days this year.", "Workhorse", "Polyglot"],
   languages: [
     { name: "TypeScript", value: 44, percent: 44 },
     { name: "Go", value: 19, percent: 19 },
@@ -193,9 +226,21 @@ const themes: ThemeName[] = [
   "GitHub Light",
 ];
 
+async function fetchPassportData(username: string): Promise<PassportData> {
+  const response = await fetch(`/api/github/${encodeURIComponent(username)}`);
+  const payload = await response.json();
+
+  if (!response.ok) {
+    throw new Error(payload.message ?? "Could not generate passport.");
+  }
+
+  return payload as PassportData;
+}
+
 
 
 export default function DeveloperPassportApp() {
+  const queryClient = useQueryClient();
   const [username, setUsername] = useState("octocat");
   const [data, setData] = useState<PassportData>(sampleData);
   const [theme, setTheme] = useState<ThemeName>("Classic Passport");
@@ -223,10 +268,11 @@ export default function DeveloperPassportApp() {
     const loadToast = toast.loading(`Analyzing GitHub profile for @${cleanUsername}...`);
     
     try {
-      const response = await fetch(`/api/github/${encodeURIComponent(cleanUsername)}`);
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload.message ?? "Could not generate passport.");
-      
+      const payload = await queryClient.fetchQuery({
+        queryKey: ["github-passport", cleanUsername.toLowerCase()],
+        queryFn: () => fetchPassportData(cleanUsername),
+      });
+
       setData(payload);
       setCurrentPage(0); // Reset book to cover
       toast.success("Passport data loaded successfully!", { id: loadToast });
@@ -405,6 +451,72 @@ export default function DeveloperPassportApp() {
             </p>
           )}
         </div>
+
+        <section className="mb-14 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-5">
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/50 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.25)]">
+            <div className="mb-5 flex items-center justify-between gap-4 border-b border-slate-800/70 pb-3">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-amber-400/80">
+                  Scouting Metrics
+                </p>
+                <h3 className="mt-1 font-serif text-2xl font-bold text-white">
+                  REST activity ledger
+                </h3>
+              </div>
+              <Info className="h-5 w-5 text-slate-500" />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+              {data.scouting.map((metric) => (
+                <div key={metric.label} className="group">
+                  <div className="mb-1.5 flex items-baseline justify-between gap-3">
+                    <span className="text-sm font-semibold text-slate-200">{metric.label}</span>
+                    <span className="font-mono text-[11px] text-slate-500">{metric.detail}</span>
+                  </div>
+                  <div className="relative h-1.5 overflow-hidden rounded-full bg-slate-800">
+                    <div
+                      className="h-full rounded-full bg-amber-300 shadow-[0_0_18px_rgba(240,217,140,0.35)]"
+                      style={{ width: `${Math.max(2, metric.score)}%` }}
+                    />
+                  </div>
+                  <div className="mt-1 flex items-center justify-between">
+                    <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">
+                      {metric.source}
+                    </span>
+                    <span className="font-mono text-sm font-black text-amber-100">{metric.score}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/50 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.25)]">
+            <div className="mb-5 border-b border-slate-800/70 pb-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-amber-400/80">
+                Playstyles
+              </p>
+              <h3 className="mt-1 font-serif text-2xl font-bold text-white">
+                Activity readout
+              </h3>
+            </div>
+
+            <div className="space-y-3">
+              {data.playstyles.map((style) => (
+                <div
+                  key={style}
+                  className="flex items-center gap-3 rounded-xl border border-slate-800/70 bg-slate-900/50 px-4 py-3"
+                >
+                  <Check className="h-4 w-4 text-amber-300" />
+                  <span className="text-sm font-semibold text-slate-200">{style}</span>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-4 text-xs leading-relaxed text-slate-500">
+              GitHub does not expose every badge-like label as a native field. The labels here are derived, but the evidence comes from REST search, repositories, events, organizations, languages, and the public contribution calendar.
+            </p>
+          </div>
+        </section>
 
         {/* The Booklet Spread Container */}
         <div className="mb-20">
