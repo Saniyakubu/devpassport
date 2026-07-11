@@ -1,36 +1,200 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GitID
+
+Your GitHub identity, beautifully visualized.
+
+GitID generates an interactive developer passport and premium shareable cards from a GitHub profile. It turns public GitHub activity into a polished portfolio artifact: a passport-style booklet, stats cards, achievements, coding habits, language breakdowns, tech stack signals, and exportable images/PDFs.
+
+## What It Does
+
+- Generates a realistic interactive developer passport booklet.
+- Creates premium shareable GitHub identity cards.
+- Pulls public GitHub profile, repository, organization, language, event, commit, PR, and issue data.
+- Estimates active days and contribution totals from the public GitHub contribution calendar.
+- Builds derived developer signals such as level, DNA, achievements, scouting metrics, and playstyles.
+- Exports cards as PNG.
+- Exports passport spreads as PDF.
+- Supports screenshots of the passport spread.
+- Uses a feature-first code structure so UI, hooks, API logic, and server utilities stay separated.
+
+## Demo
+
+Production URL:
+
+```txt
+https://gitid.vercel.app
+```
+
+## Tech Stack
+
+- Next.js App Router
+- React
+- TypeScript
+- Tailwind CSS
+- TanStack Query
+- react-pageflip
+- embla-carousel-react
+- html-to-image
+- jsPDF
+- canvas-confetti
+- sonner
+- lucide-react
+- react-icons
+- Vercel Analytics and Speed Insights
+
+## Project Structure
+
+```txt
+src/
+  app/
+    api/github/[username]/route.ts     # Thin App Router API adapter
+    developer-passport-app.tsx         # Thin app adapter
+    layout.tsx                         # Metadata, fonts, analytics, providers
+    page.tsx                           # Home route and JSON-LD
+    query-provider.tsx                 # TanStack Query provider
+
+  components/
+    LoaderScreen.tsx                   # Loading experience
+    PassportBook.tsx                   # Interactive passport booklet
+    ShareableCardsSection.tsx          # Share card carousel and card designs
+
+  features/developer-passport/
+    developer-passport-app.tsx         # Main feature composition
+    components/                        # Header, hero, form, footer, passport shell
+    hooks/                             # Generate/export behavior
+    services/                          # Client-side API fetcher
+    server/                            # GitHub REST client, parsers, route handler
+    types/                             # Client-facing passport data types
+    utils/                             # Browser utility helpers
+```
+
+## How The GitHub Data Works
+
+GitID is REST-first.
+
+The API route calls GitHub REST endpoints for:
+
+- User profile
+- Repositories
+- Repository languages
+- Public organizations
+- Public events
+- Commit search counts
+- Pull request search counts
+- Issue search counts
+
+GitHub does not expose the full contribution calendar as a normal REST endpoint. For active days and public contribution totals, GitID reads the public GitHub contribution calendar markup and falls back to public events when needed.
+
+Some fields are intentionally derived, not native GitHub fields:
+
+- Developer level
+- Developer DNA
+- Achievements
+- Scouting scores
+- Playstyles
+- Coding habit summaries
+
+These labels are computed from GitHub data and should be treated as product interpretation, not official GitHub fields.
+
+## Authentication
+
+The app can run without a token, but unauthenticated GitHub requests are more limited and rate-limited.
+
+Create `.env.local` if you want better reliability:
+
+```env
+GITHUB_TOKEN=your_github_token_here
+```
+
+With a token, the server can make authenticated REST requests. If the token belongs to the same GitHub user being generated, private organization memberships may be visible through the authenticated `/user/orgs` endpoint, depending on token permissions and GitHub account visibility.
+
+Do not expose `GITHUB_TOKEN` to the browser. This project only reads it on the server.
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run the development server:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+bun run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open:
 
-## Learn More
+```txt
+http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+Build for production:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+bun run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Start the production build:
 
-## Deploy on Vercel
+```bash
+bun run start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Run lint:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+bun run lint
+```
+
+Run TypeScript directly:
+
+```bash
+bun x tsc -p tsconfig.json --noEmit
+```
+
+## Scripts
+
+```txt
+bun run dev      Start the Next.js development server
+bun run build    Create a production build
+bun run start    Start the production server
+bun run lint     Run ESLint
+```
+
+## Deployment
+
+The project is ready for Vercel.
+
+Recommended environment variable:
+
+```env
+GITHUB_TOKEN=your_github_token_here
+```
+
+The app includes:
+
+- SEO metadata
+- Open Graph metadata
+- Twitter card metadata
+- JSON-LD structured data
+- `robots.txt`
+- `sitemap.xml`
+- Web app manifest
+- Vercel Analytics
+- Vercel Speed Insights
+
+## Notes For Contributors
+
+- Keep GitHub API secrets server-side.
+- Keep the App Router API file thin. Put route implementation in `src/features/developer-passport/server`.
+- Keep product UI in `src/features/developer-passport/components` where possible.
+- Shared visual primitives can live in `src/components`.
+- Avoid changing the API response shape unless the UI is updated at the same time.
+- The passport and card files are still large and are good candidates for further component extraction.
+
+## License
+
+MIT License. See [LICENSE](./LICENSE).
+
+You can clone it, modify it, ship it, and use it in your own work.
