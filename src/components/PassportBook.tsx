@@ -7,7 +7,8 @@ import {
   Code, Users, CheckCircle, ChevronLeft, ChevronRight,
   GitFork, Activity, ShieldCheck, MapPin, Github
 } from "lucide-react";
-import CountUp from "react-countup";
+
+import { playPageFlipSound } from "@/features/developer-passport/utils/page-flip-sound";
 
 // Dynamically import react-pageflip to bypass Next.js SSR environment constraints
 const HTMLFlipBook = dynamic(() => import("react-pageflip"), {
@@ -21,40 +22,6 @@ const HTMLFlipBook = dynamic(() => import("react-pageflip"), {
     </div>
   )
 });
-
-// Sound generator using Web Audio API
-function playPageFlipSound() {
-  try {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const duration = 0.25;
-    const bufferSize = audioContext.sampleRate * duration;
-    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-    const data = buffer.getChannelData(0);
-    
-    for (let i = 0; i < bufferSize; i++) {
-      const decay = Math.pow(1 - i / bufferSize, 3);
-      data[i] = (Math.random() * 2 - 1) * decay * 0.08;
-    }
-    
-    const noise = audioContext.createBufferSource();
-    noise.buffer = buffer;
-    
-    const filter = audioContext.createBiquadFilter();
-    filter.type = "bandpass";
-    filter.frequency.value = 1100;
-    filter.Q.value = 1.0;
-    
-    const gainNode = audioContext.createGain();
-    gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
-    
-    noise.connect(filter);
-    filter.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    noise.start();
-  } catch (e) {}
-}
 
 function MiniQr() {
   const cells = Array.from({ length: 121 }, (_, i) => {
@@ -724,7 +691,7 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
                   <span className="text-[8px] font-bold uppercase tracking-[0.15em] text-slate-500 mt-1 mb-8">Open Source Community</span>
 
                   <div className="w-3/4 border-t border-slate-400 pt-4">
-                    <span className="font-serif text-[20px] italic text-slate-700 opacity-70">GitID</span>
+                    <span className="font-serif text-[20px] italic text-slate-700 opacity-70">Developer Passport</span>
                     <div className="w-full h-px bg-slate-400 mt-2 mb-1" />
                     <span className="text-[6px] font-bold uppercase tracking-widest text-slate-500">OFFICIAL SEAL</span>
                   </div>
