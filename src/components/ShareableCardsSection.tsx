@@ -232,9 +232,9 @@ function CardShell({ data, id, children }: { data: PassportData; id: string; chi
       <div className="px-6 py-4 bg-[#0d1524] border-t border-white/5 flex items-center justify-between relative z-10">
          <div className="flex items-center gap-2">
             <Github className="w-4 h-4 text-[#e9b646]" />
-            <span className="text-[#a1b0cb] text-[9px] font-mono tracking-wider">DEV PASSPORT • {new Date().getFullYear()}</span>
+            <span className="text-[#a1b0cb] text-[9px] font-mono tracking-wider">GITID • {new Date().getFullYear()}</span>
          </div>
-         <span className="text-[#e9b646] text-[9px] font-mono tracking-wider">DP-{String(data.user.id).slice(0, 5)}</span>
+         <span className="text-[#e9b646] text-[9px] font-mono tracking-wider">GID-{String(data.user.id).slice(0, 5)}</span>
       </div>
       
       {/* Subtle background glow */}
@@ -581,7 +581,7 @@ const CARDS = [
 
 /* ── Exported Wrapper ── */
 export default function ShareableCardsSection({ data, handleExportCard }: { data: PassportData; handleExportCard: (idx: number) => Promise<void> }) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "center", containScroll: "trimSnaps", slidesToScroll: 1 });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "center", containScroll: false, slidesToScroll: 1 });
   const [selectedIdx, setSelectedIdx] = useState(0);
 
   const onSelect = useCallback(() => {
@@ -661,18 +661,22 @@ export default function ShareableCardsSection({ data, handleExportCard }: { data
         </button>
 
         <div className="overflow-hidden px-4 py-8" ref={emblaRef}>
-          <div className="flex gap-8 items-center">
+          <div className="flex items-center">
             {CARDS.map((CardItem, idx) => (
               <div
                 key={CardItem.id}
-                className={`flex-shrink-0 transition-transform duration-500 origin-center ${
-                  idx === selectedIdx ? "scale-100 opacity-100 z-10" : "scale-[0.85] opacity-50 blur-[1px]"
-                }`}
-                style={{ flex: "0 0 auto" }}
+                className="flex-shrink-0 flex justify-center items-start"
+                style={{ flex: "0 0 auto", width: "clamp(280px, 85vw, 400px)" }}
               >
-                <CardShell data={data} id={`share-card-v2-${idx}`}>
-                  <CardItem.Component data={data} />
-                </CardShell>
+                <div 
+                  className={`transition-all duration-500 origin-top ${
+                    idx === selectedIdx ? "scale-[0.75] h-[435px] sm:scale-[0.85] sm:h-[493px] md:scale-100 md:h-[580px] opacity-100 z-10" : "scale-[0.65] h-[377px] sm:scale-[0.75] sm:h-[435px] md:scale-[0.85] md:h-[493px] opacity-50 blur-[1px]"
+                  }`}
+                >
+                  <CardShell data={data} id={`share-card-v2-${idx}`}>
+                    <CardItem.Component data={data} />
+                  </CardShell>
+                </div>
               </div>
             ))}
           </div>

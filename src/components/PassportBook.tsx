@@ -277,7 +277,7 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
       <HTMLFlipBook
         width={400} height={520} size="stretch"
         minWidth={360} maxWidth={400} minHeight={480} maxHeight={520}
-        showCover={false} useMouseEvents={false}
+        showCover={false} useMouseEvents={true}
         onFlip={(e: any) => { setCurrentPage(e.data); playPageFlipSound(); }}
         ref={flipBookRef}
         className="w-full h-full rounded-md overflow-hidden"
@@ -724,7 +724,7 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
                   <span className="text-[8px] font-bold uppercase tracking-[0.15em] text-slate-500 mt-1 mb-8">Open Source Community</span>
 
                   <div className="w-3/4 border-t border-slate-400 pt-4">
-                    <span className="font-serif text-[20px] italic text-slate-700 opacity-70">Developer Passport</span>
+                    <span className="font-serif text-[20px] italic text-slate-700 opacity-70">GitID</span>
                     <div className="w-full h-px bg-slate-400 mt-2 mb-1" />
                     <span className="text-[6px] font-bold uppercase tracking-widest text-slate-500">OFFICIAL SEAL</span>
                   </div>

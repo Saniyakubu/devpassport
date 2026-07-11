@@ -450,8 +450,8 @@ export default function DeveloperPassportApp() {
               <Shield className="w-5 h-5 text-slate-950" />
             </div>
             <div>
-              <h1 className="text-xl font-serif tracking-wide text-amber-100 font-bold uppercase leading-none">Developer Passport</h1>
-              <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 mt-1 block">GitHub Activity Ledger</span>
+              <h1 className="text-xl font-serif tracking-wide text-amber-100 font-bold uppercase leading-none">GitID</h1>
+              <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 mt-1 block">GitHub Identity Visualizer</span>
             </div>
           </div>
           <a 
@@ -485,10 +485,10 @@ export default function DeveloperPassportApp() {
           </div>
 
           <h2 className="text-5xl md:text-6xl font-serif text-white tracking-tight font-extrabold leading-none">
-            Developer <span className="gold-foil">Passports</span> & Cards
+            Your GitHub <span className="gold-foil">Identity</span>, Visualized
           </h2>
           <p className="mt-4 text-slate-400 text-base md:text-lg leading-relaxed max-w-[640px] mx-auto">
-            A beautifully crafted digital identity artifact and shareable statistics cards for your GitHub profile.
+            Generate stunning developer passports and shareable cards from any GitHub profile.
           </p>
         </div>
 
@@ -583,8 +583,8 @@ export default function DeveloperPassportApp() {
 
         {/* Footer */}
         <footer className="pt-10 border-t border-slate-800/40 text-center text-xs text-slate-500 space-y-2">
-          <p>© 2026 Developer Passport. Handcrafted luxury identity tool.</p>
-          <p className="font-mono opacity-70">DP-APP v2.0 - Verified Secure Session</p>
+          <p>© {new Date().getFullYear()} GitID. Your GitHub identity, beautifully visualized.</p>
+          <p className="font-mono opacity-70">GITID v2.0</p>
         </footer>
       </div>
     </main>
