@@ -40,14 +40,15 @@ export function PassportExperience({
 
         <div className="flex w-full items-center justify-center overflow-hidden rounded-3xl border border-slate-900 bg-slate-950/40 p-2 shadow-3xl md:p-6">
           <div
-            id="passport-stage-container"
             className="flex h-[260px] min-w-[850px] origin-top scale-[0.42] justify-center min-[400px]:h-[300px] min-[400px]:scale-[0.5] sm:h-[450px] sm:scale-75 md:h-[500px] md:scale-90 lg:h-auto lg:origin-center lg:scale-100"
           >
-            <PassportBook
-              data={data}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
+            <div id="passport-stage-container" className="flex justify-center w-full">
+              <PassportBook
+                data={data}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+              />
+            </div>
           </div>
         </div>
 

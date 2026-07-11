@@ -106,9 +106,53 @@ const GuillocheBg = () => (
   </div>
 );
 
+const PageHeader = ({ num, title, right = false }: { num: string, title: string, right?: boolean }) => (
+  <div className={`flex justify-between items-center border-b border-amber-900/15 pb-1.5 mb-4 ${right ? 'flex-row-reverse' : ''}`}>
+    <span className="text-[9px] font-sans tracking-widest text-amber-900/60 font-black">PAGE {num}</span>
+    <span className="text-[10px] font-serif font-bold uppercase tracking-wider text-amber-900/80">{title}</span>
+  </div>
+);
+
+const FlipWrapper = ({ 
+  children, exportMode, isMobile, currentPage, setCurrentPage, playPageFlipSound, flipBookRef 
+}: any) => {
+  if (exportMode) {
+    const pages = React.Children.toArray(children);
+    const spreads = [];
+    for(let i=0; i<pages.length; i+=2) {
+       spreads.push(
+          <div key={i} className="passport-export-spread flex w-[800px] h-[520px] bg-[#eef1f6]">
+             <div className="w-[400px] h-[520px]">{pages[i]}</div>
+             <div className="w-[400px] h-[520px]">{pages[i+1]}</div>
+          </div>
+       );
+    }
+    return (
+      <div id="passport-export-container" className="absolute opacity-0 pointer-events-none -left-[9999px]">
+        {spreads}
+      </div>
+    );
+  }
+  return (
+    <HTMLFlipBook
+      width={400} height={520} size="stretch"
+      minWidth={360} maxWidth={400} minHeight={480} maxHeight={520}
+      showCover={false} useMouseEvents={!isMobile}
+      startPage={currentPage}
+      onFlip={(e: any) => { setCurrentPage(e.data); playPageFlipSound(); }}
+      ref={flipBookRef}
+      className="w-full h-full rounded-md overflow-hidden"
+    >
+      {children}
+    </HTMLFlipBook>
+  );
+};
+
 export default function PassportBook({ data, currentPage, setCurrentPage, exportMode = false }: any) {
   const flipBookRef = useRef<any>(null);
   const [coverState, setCoverState] = useState<'front' | 'open' | 'back'>('front');
+  const [touchStartPos, setTouchStartPos] = useState({ x: 0, y: 0 });
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   useEffect(() => {
     if (flipBookRef.current && coverState === 'open') {
@@ -215,44 +259,7 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
     );
   }
 
-  const PageHeader = ({ num, title, right = false }: { num: string, title: string, right?: boolean }) => (
-    <div className={`flex justify-between items-center border-b border-amber-900/15 pb-1.5 mb-4 ${right ? 'flex-row-reverse' : ''}`}>
-      <span className="text-[9px] font-sans tracking-widest text-amber-900/60 font-black">PAGE {num}</span>
-      <span className="text-[10px] font-serif font-bold uppercase tracking-wider text-amber-900/80">{title}</span>
-    </div>
-  );
 
-  const FlipWrapper = ({ children }: any) => {
-    if (exportMode) {
-      const pages = React.Children.toArray(children);
-      const spreads = [];
-      for(let i=0; i<pages.length; i+=2) {
-         spreads.push(
-            <div key={i} className="passport-export-spread flex w-[800px] h-[520px] bg-[#eef1f6]">
-               <div className="w-[400px] h-[520px]">{pages[i]}</div>
-               <div className="w-[400px] h-[520px]">{pages[i+1]}</div>
-            </div>
-         );
-      }
-      return (
-        <div id="passport-export-container" className="absolute opacity-0 pointer-events-none -left-[9999px]">
-          {spreads}
-        </div>
-      );
-    }
-    return (
-      <HTMLFlipBook
-        width={400} height={520} size="stretch"
-        minWidth={360} maxWidth={400} minHeight={480} maxHeight={520}
-        showCover={false} useMouseEvents={true}
-        onFlip={(e: any) => { setCurrentPage(e.data); playPageFlipSound(); }}
-        ref={flipBookRef}
-        className="w-full h-full rounded-md overflow-hidden"
-      >
-        {children}
-      </HTMLFlipBook>
-    );
-  };
 
   return (
     <div className={`flex flex-col items-center w-full select-none ${exportMode ? 'h-fit' : ''}`}>
@@ -267,7 +274,24 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
         </div>
       )}
 
-      <div className={`relative flex items-center justify-center ${exportMode ? 'w-[800px]' : 'w-full max-w-[840px]'}`}>
+      <div 
+        className={`relative flex items-center justify-center ${exportMode ? 'w-[800px]' : 'w-full max-w-[840px]'}`}
+        onTouchStart={(e) => setTouchStartPos({ x: e.changedTouches[0].screenX, y: e.changedTouches[0].screenY })}
+        onTouchEnd={(e) => {
+          if (!isMobile || exportMode) return;
+          const dx = touchStartPos.x - e.changedTouches[0].screenX;
+          const dy = Math.abs(touchStartPos.y - e.changedTouches[0].screenY);
+          if (Math.abs(dx) > 40 && dy < 60) {
+            if (dx > 0) {
+              if (currentPage >= 10) { setCoverState('back'); playPageFlipSound(); }
+              else flipBookRef.current?.pageFlip().flipNext();
+            } else {
+              if (currentPage === 0) { setCoverState('front'); playPageFlipSound(); }
+              else flipBookRef.current?.pageFlip().flipPrev();
+            }
+          }
+        }}
+      >
         {!exportMode && (
           <>
             <button onClick={() => {
@@ -302,7 +326,14 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
             </>
           )}
 
-          <FlipWrapper>
+          <FlipWrapper 
+            exportMode={exportMode} 
+            isMobile={isMobile} 
+            currentPage={currentPage} 
+            setCurrentPage={setCurrentPage} 
+            playPageFlipSound={playPageFlipSound} 
+            flipBookRef={flipBookRef}
+          >
             {/* 01: IDENTITY */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden flex flex-col">
               <GuillocheBg />
