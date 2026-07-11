@@ -239,6 +239,37 @@ async function fetchPassportData(username: string): Promise<PassportData> {
 
 
 
+const MiniPassportCover = ({ color, title, label, tilt }: { color: string, title: string, label: string, tilt: string }) => (
+  <div className={`flex flex-col items-center ${tilt} transition-transform duration-500 hover:scale-110 hover:-translate-y-2 hover:z-20 cursor-default select-none`}>
+    <div 
+      className="relative flex flex-col items-center w-[110px] h-[160px] rounded-r-xl rounded-l-sm shadow-[0_15px_35px_rgba(0,0,0,0.6)] border border-white/10"
+      style={{ backgroundColor: color }}
+    >
+      <div className="absolute left-0 top-0 bottom-0 w-2.5 bg-gradient-to-r from-black/60 via-transparent to-black/20 rounded-l-sm z-10" />
+      <div className="flex flex-col items-center justify-between h-full w-full py-4 px-2 z-0">
+        <h2 className="text-[9px] font-sans tracking-[0.1em] text-[#e2c179] font-medium uppercase text-center leading-tight">
+          DEVELOPER<br/>PASSPORT
+        </h2>
+        <div className="w-10 h-10 flex items-center justify-center text-[#e2c179] my-auto">
+          <Github className="w-8 h-8" strokeWidth={1} />
+        </div>
+        <div className="w-5 h-3 flex flex-col items-center justify-center mb-1">
+           <svg viewBox="0 0 40 30" className="w-full h-full text-[#e2c179] fill-current">
+              <rect x="0" y="10" width="40" height="12" />
+              <circle cx="20" cy="16" r="6" fill={color} stroke="currentColor" strokeWidth="2" />
+              <rect x="15" y="0" width="10" height="10" />
+           </svg>
+        </div>
+      </div>
+    </div>
+    <div className="mt-4 bg-slate-900/90 backdrop-blur border border-slate-700/50 rounded-lg px-3 py-1.5 text-center shadow-xl">
+      <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest">{title}</p>
+      <p className="text-[8px] text-slate-400 mt-0.5">{label}</p>
+    </div>
+  </div>
+);
+
+
 export default function DeveloperPassportApp() {
   const queryClient = useQueryClient();
   const [username, setUsername] = useState("octocat");
@@ -410,8 +441,26 @@ export default function DeveloperPassportApp() {
         </header>
 
         {/* Hero Copy */}
-        <div className="text-center mb-12 max-w-[800px] mx-auto">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-sans tracking-widest text-amber-500 uppercase font-black mb-4">
+        <div className="relative text-center mb-14 max-w-[800px] mx-auto">
+          {/* Floating Example Passports */}
+          <div className="hidden lg:flex absolute -left-24 top-4 z-0 pointer-events-auto">
+            <MiniPassportCover 
+              color="#061A3A" 
+              title="Standard Issue" 
+              label="For Active Developers" 
+              tilt="-rotate-12"
+            />
+          </div>
+          <div className="hidden lg:flex absolute -right-24 top-4 z-0 pointer-events-auto">
+            <MiniPassportCover 
+              color="#6B1D25" 
+              title="Elite Tier" 
+              label="Level 50+ / 5,000 XP" 
+              tilt="rotate-12"
+            />
+          </div>
+
+          <span className="relative z-10 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-sans tracking-widest text-amber-500 uppercase font-black mb-6">
             <Sparkles className="w-3.5 h-3.5" /> Premium Build Prompt v2
           </span>
           <h2 className="text-5xl md:text-6xl font-serif text-white tracking-tight font-extrabold leading-none">
