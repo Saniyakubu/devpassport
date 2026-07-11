@@ -225,7 +225,7 @@ function CardShell({ data, id, children }: { data: PassportData; id: string; chi
         </div>
       </div>
 
-      <div className="relative z-10 flex flex-col flex-1 px-6 py-5 overflow-hidden">
+      <div className="relative z-10 flex flex-col flex-1 px-6 py-5 overflow-hidden bg-[#0a0f1a]">
         {children}
       </div>
 
