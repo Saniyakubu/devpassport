@@ -26,7 +26,8 @@ import {
   Code,
   Info,
   Check,
-  AlertCircle
+  AlertCircle,
+  Camera
 } from "lucide-react";
 import { toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
@@ -293,8 +294,8 @@ const MiniPassportCover = ({ color, title, tilt }: { color: string, title: strin
 
 export default function DeveloperPassportApp() {
   const queryClient = useQueryClient();
-  const [username, setUsername] = useState("octocat");
-  const [data, setData] = useState<PassportData>(sampleData);
+  const [username, setUsername] = useState("");
+  const [data, setData] = useState<PassportData | null>(null);
   const [theme, setTheme] = useState<ThemeName>("Classic Passport");
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -339,6 +340,7 @@ export default function DeveloperPassportApp() {
 
   // Export Shareable Card as PNG using html-to-image
   const handleExportCard = async (index: number) => {
+    if (!data) return;
     const CARD_NAMES = ["identity","achievement","habits","techstack","opensource","minimal","terminal","stamps","dna"];
     const CARD_LABELS = ["Identity Card","Achievement Card","Coding Habits Card","Tech Stack Card","Open Source Card","Minimal Card","Retro Terminal Card","Passport Stamp Card","Developer DNA Card"];
     const cardElementId = `share-card-${index}`;
@@ -370,16 +372,11 @@ export default function DeveloperPassportApp() {
 
   // Export Open Passport spreads as PDF
   const handleExportPdf = async () => {
+    if (!data) return;
     const loadToast = toast.loading("Building PDF passport spreads...");
     try {
-      const el = document.getElementById("passport-stage-container");
-      if (!el) throw new Error("Passport container not found.");
-
-      const dataUrl = await toPng(el, {
-        quality: 0.95,
-        pixelRatio: 2,
-        backgroundColor: "transparent",
-      });
+      const spreads = document.querySelectorAll(".passport-export-spread");
+      if (!spreads || spreads.length === 0) throw new Error("Passport spreads not found");
 
       const pdf = new jsPDF({
         orientation: "landscape",
@@ -387,12 +384,46 @@ export default function DeveloperPassportApp() {
         format: [840, 560]
       });
 
-      pdf.addImage(dataUrl, "PNG", 20, 20, 800, 520);
+      for (let i = 0; i < spreads.length; i++) {
+        const dataUrl = await toPng(spreads[i] as HTMLElement, {
+          quality: 0.95,
+          pixelRatio: 2,
+          backgroundColor: "transparent",
+        });
+
+        if (i > 0) pdf.addPage();
+        pdf.addImage(dataUrl, "PNG", 20, 20, 800, 520);
+      }
+
       pdf.save(`${data.user.login}-developer-passport.pdf`);
       toast.success("PDF saved successfully!", { id: loadToast });
     } catch (e) {
       console.error(e);
       toast.error("Failed to generate PDF.", { id: loadToast });
+    }
+  };
+
+  // Take a Screenshot of the passport spread
+  const handleScreenshot = async () => {
+    if (!data) return;
+    const loadToast = toast.loading("Capturing screenshot...");
+    try {
+      const el = document.getElementById("passport-stage-container");
+      if (!el) throw new Error("Passport container not found");
+      const dataUrl = await toPng(el, {
+        quality: 1.0,
+        pixelRatio: 2.5,
+        backgroundColor: "transparent",
+      });
+
+      const link = document.createElement("a");
+      link.download = `${data.user.login}-passport-spread.png`;
+      link.href = dataUrl;
+      link.click();
+      toast.success("Screenshot saved!", { id: loadToast });
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to capture screenshot.", { id: loadToast });
     }
   };
 
@@ -413,7 +444,7 @@ export default function DeveloperPassportApp() {
 
       <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 py-8">
         {/* Top Navbar */}
-        <header className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10 pb-6 border-b border-slate-800/40">
+        <header className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 pb-6 border-b border-slate-800/40">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/10">
               <Shield className="w-5 h-5 text-slate-950" />
@@ -423,6 +454,16 @@ export default function DeveloperPassportApp() {
               <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 mt-1 block">GitHub Activity Ledger</span>
             </div>
           </div>
+          <a 
+            href="https://github.com/Saniyakubu/devpassport" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-800 rounded-full hover:bg-slate-800 hover:border-slate-700 transition-colors text-slate-300 hover:text-white"
+          >
+            <Github className="w-4 h-4" />
+            <span className="text-xs font-bold uppercase tracking-widest">Star on GitHub</span>
+            <Star className="w-3.5 h-3.5 text-amber-500" />
+          </a>
         </header>
 
         {/* Hero Copy */}
@@ -467,8 +508,8 @@ export default function DeveloperPassportApp() {
               />
               <button
                 type="submit"
-                disabled={loading}
-                className="px-6 py-2.5 border border-amber-500/30 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-lg hover:shadow-amber-500/10 active:scale-95 disabled:opacity-50"
+                disabled={loading || !username.trim()}
+                className="px-6 py-2.5 border border-amber-500/30 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-lg hover:shadow-amber-500/10 active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
               >
                 {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Generate"}
               </button>
@@ -483,49 +524,60 @@ export default function DeveloperPassportApp() {
 
 
 
-        {/* The Booklet Spread Container */}
-        <div className="mb-20">
-          <div className="text-center mb-6">
-            <h3 className="text-2xl font-serif text-slate-200 font-bold uppercase tracking-wide">
-              Digital Passport Booklet
-            </h3>
-            <span className="text-xs text-slate-500 tracking-wider font-mono">
-              Draggable corners, sound feedback, page indexing
-            </span>
-          </div>
+        {data && (
+          <>
+            {/* Hidden passport rendered fully for PDF export */}
+            <div aria-hidden="true">
+               <PassportBook data={data} exportMode={true} />
+            </div>
 
-          <div 
-            id="passport-stage-container" 
-            className="flex items-center justify-center p-8 bg-slate-950/40 rounded-3xl border border-slate-900 shadow-3xl"
-          >
-            <PassportBook 
-              data={data} 
-              currentPage={currentPage} 
-              setCurrentPage={setCurrentPage} 
-            />
-          </div>
+            {/* The Booklet Spread Container */}
+            <div className="mb-20">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-serif text-slate-200 font-bold uppercase tracking-wide">
+                  Digital Passport Booklet
+                </h3>
+                <span className="text-xs text-slate-500 tracking-wider font-mono">
+                  Draggable corners, sound feedback, page indexing
+                </span>
+              </div>
 
-          {/* Action Row */}
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
-            <button
-              onClick={handleExportPdf}
-              className="px-5 py-2.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition"
-            >
-              <Download className="w-4 h-4" /> Download PDF Spread
-            </button>
-            <button
-              onClick={() => window.print()}
-              className="px-5 py-2.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition"
-            >
-              <Printer className="w-4 h-4" /> Print Booklet
-            </button>
-          </div>
-        </div>
+              <div className="flex justify-center items-center w-full overflow-hidden p-2 md:p-6 bg-slate-950/40 rounded-3xl border border-slate-900 shadow-3xl">
+                <div 
+                  id="passport-stage-container"
+                  className="flex justify-center transform scale-[0.42] min-[400px]:scale-[0.5] sm:scale-75 md:scale-90 lg:scale-100 origin-top lg:origin-center h-[260px] min-[400px]:h-[300px] sm:h-[450px] md:h-[500px] lg:h-auto min-w-[850px]"
+                >
+                  <PassportBook 
+                    data={data} 
+                    currentPage={currentPage} 
+                    setCurrentPage={setCurrentPage} 
+                  />
+                </div>
+              </div>
 
-        {/* ─────────────────────────────────────────────────────── */}
-        {/* SHAREABLE CARDS — Full Carousel Redesign              */}
-        {/* ─────────────────────────────────────────────────────── */}
-        <ShareableCardsSection data={data} handleExportCard={handleExportCard} />
+              {/* Action Row */}
+              <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
+                <button
+                  onClick={handleScreenshot}
+                  className="px-5 py-2.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition"
+                >
+                  <Camera className="w-4 h-4" /> Take a Screenshot
+                </button>
+                <button
+                  onClick={handleExportPdf}
+                  className="px-5 py-2.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition"
+                >
+                  <Download className="w-4 h-4" /> Download PDF Spread
+                </button>
+              </div>
+            </div>
+
+            {/* ─────────────────────────────────────────────────────── */}
+            {/* SHAREABLE CARDS — Full Carousel Redesign              */}
+            {/* ─────────────────────────────────────────────────────── */}
+            <ShareableCardsSection data={data} handleExportCard={handleExportCard} />
+          </>
+        )}
 
 
 

@@ -25,6 +25,13 @@ export const metadata: Metadata = {
     "Generate a premium interactive passport, share cards, and exports from a GitHub profile.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

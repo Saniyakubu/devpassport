@@ -139,7 +139,7 @@ const GuillocheBg = () => (
   </div>
 );
 
-export default function PassportBook({ data, currentPage, setCurrentPage }: any) {
+export default function PassportBook({ data, currentPage, setCurrentPage, exportMode = false }: any) {
   const flipBookRef = useRef<any>(null);
   const [coverState, setCoverState] = useState<'front' | 'open' | 'back'>('front');
 
@@ -168,17 +168,34 @@ export default function PassportBook({ data, currentPage, setCurrentPage }: any)
   const coverColor = isHighLevel ? "#6B1D25" : "#061A3A"; // Burgundy for high level
   const passportNo = `DP-${String(data.user.id).slice(0, 4)}-${data.user.login.toUpperCase().slice(0, 4)}`;
 
-  if (coverState === 'front') {
+  if (coverState === 'front' && !exportMode) {
     return (
       <div className="relative flex flex-col items-center justify-center min-h-[580px] w-full py-8 select-none">
+        
+        {/* Subtle hint indicator */}
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce text-amber-500/80 z-20 pointer-events-none">
+          <span className="text-[10px] uppercase tracking-widest font-bold font-sans bg-slate-900/90 px-3 py-1.5 rounded-full border border-amber-500/30 shadow-xl backdrop-blur-sm">Click to open passport</span>
+          <div className="w-px h-8 bg-gradient-to-b from-amber-500/50 to-transparent mt-1" />
+        </div>
+
         <button
           onClick={handleOpenCover}
-          className="group relative flex flex-col items-center w-[350px] h-[500px] rounded-r-3xl rounded-l-md cursor-pointer text-[#e2c179] transition-all duration-700 hover:-translate-y-4 hover:shadow-[0_45px_120px_rgba(0,0,0,0.7)] text-center shadow-[0_25px_60px_rgba(0,0,0,0.6)]"
+          className="group relative flex flex-col items-center w-[350px] h-[500px] rounded-r-3xl rounded-l-md cursor-pointer text-[#e2c179] transition-all duration-700 text-center animate-[passport-hint_4s_ease-in-out_infinite]"
           style={{ 
             perspective: "1500px",
+            transformStyle: "preserve-3d",
+            transformOrigin: "left center",
             backgroundColor: coverColor,
           }}
         >
+          <style dangerouslySetInnerHTML={{__html: `
+            @keyframes passport-hint {
+              0%, 100% { transform: rotateY(0deg) scale(1); box-shadow: 0 25px 60px rgba(0,0,0,0.6); }
+              5% { transform: rotateY(-12deg) scale(1.02); box-shadow: 20px 35px 80px rgba(0,0,0,0.7); }
+              15% { transform: rotateY(0deg) scale(1); box-shadow: 0 25px 60px rgba(0,0,0,0.6); }
+            }
+            .group:hover { animation: none; transform: translateY(-16px); box-shadow: 0 45px 120px rgba(0,0,0,0.7); }
+          `}} />
           {/* Spine crease */}
           <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-black/50 via-transparent to-black/20 z-10 rounded-l-md" />
 
@@ -206,7 +223,7 @@ export default function PassportBook({ data, currentPage, setCurrentPage }: any)
     );
   }
 
-  if (coverState === 'back') {
+  if (coverState === 'back' && !exportMode) {
     return (
       <div className="relative flex flex-col items-center justify-center min-h-[580px] w-full py-8 select-none">
         <button
@@ -238,52 +255,87 @@ export default function PassportBook({ data, currentPage, setCurrentPage }: any)
     </div>
   );
 
+  const FlipWrapper = ({ children }: any) => {
+    if (exportMode) {
+      const pages = React.Children.toArray(children);
+      const spreads = [];
+      for(let i=0; i<pages.length; i+=2) {
+         spreads.push(
+            <div key={i} className="passport-export-spread flex w-[800px] h-[520px] bg-[#eef1f6]">
+               <div className="w-[400px] h-[520px]">{pages[i]}</div>
+               <div className="w-[400px] h-[520px]">{pages[i+1]}</div>
+            </div>
+         );
+      }
+      return (
+        <div id="passport-export-container" className="absolute opacity-0 pointer-events-none -left-[9999px]">
+          {spreads}
+        </div>
+      );
+    }
+    return (
+      <HTMLFlipBook
+        width={400} height={520} size="stretch"
+        minWidth={360} maxWidth={400} minHeight={480} maxHeight={520}
+        showCover={false} useMouseEvents={false}
+        onFlip={(e: any) => { setCurrentPage(e.data); playPageFlipSound(); }}
+        ref={flipBookRef}
+        className="w-full h-full rounded-md overflow-hidden"
+      >
+        {children}
+      </HTMLFlipBook>
+    );
+  };
+
   return (
-    <div className="flex flex-col items-center w-full select-none">
-      <div className="flex items-center justify-center w-full max-w-[800px] mb-4 px-2">
-        <button
-          onClick={handleCloseCover}
-          className="px-4 py-2 text-xs font-bold font-sans uppercase tracking-wider text-amber-600 border border-amber-500/20 bg-amber-950/10 hover:bg-amber-500/10 rounded-full transition"
-        >
-          Close Passport
-        </button>
-      </div>
-
-      <div className="relative flex items-center justify-center w-full max-w-[840px]">
-        <button onClick={() => {
-          if (currentPage === 0) {
-            setCoverState('front');
-            playPageFlipSound();
-          } else {
-            flipBookRef.current?.pageFlip().flipPrev();
-          }
-        }} className="absolute -left-12 p-3 text-slate-400 hover:text-amber-500 z-20">
-          <ChevronLeft className="w-8 h-8" />
-        </button>
-        <button onClick={() => {
-          if (currentPage >= 10) {
-            setCoverState('back');
-            playPageFlipSound();
-          } else {
-            flipBookRef.current?.pageFlip().flipNext();
-          }
-        }} className="absolute -right-12 p-3 text-slate-400 hover:text-amber-500 z-20">
-          <ChevronRight className="w-8 h-8" />
-        </button>
-
-        <div className="w-[800px] h-[520px] shadow-[0_30px_90px_rgba(0,0,0,0.6)] relative overflow-visible rounded-md bg-[#eef1f6]">
-          {/* Thin sharp spine shadow to fix the gap */}
-          <div className="absolute left-[50%] top-0 bottom-0 w-[4px] -translate-x-[50%] bg-slate-500/30 shadow-[0_0_15px_3px_rgba(0,0,0,0.25)] z-30 pointer-events-none" />
-          <div className="absolute left-[50%] top-0 bottom-0 w-[1px] -translate-x-[50%] bg-slate-400/80 z-30 pointer-events-none" />
-
-          <HTMLFlipBook
-            width={400} height={520} size="stretch"
-            minWidth={360} maxWidth={400} minHeight={480} maxHeight={520}
-            showCover={false} useMouseEvents={false}
-            onFlip={(e: any) => { setCurrentPage(e.data); playPageFlipSound(); }}
-            ref={flipBookRef}
-            className="w-full h-full rounded-md overflow-hidden"
+    <div className={`flex flex-col items-center w-full select-none ${exportMode ? 'h-fit' : ''}`}>
+      {!exportMode && (
+        <div className="flex items-center justify-center w-full max-w-[800px] mb-4 px-2">
+          <button
+            onClick={handleCloseCover}
+            className="px-4 py-2 text-xs font-bold font-sans uppercase tracking-wider text-amber-600 border border-amber-500/20 bg-amber-950/10 hover:bg-amber-500/10 rounded-full transition"
           >
+            Close Passport
+          </button>
+        </div>
+      )}
+
+      <div className={`relative flex items-center justify-center ${exportMode ? 'w-[800px]' : 'w-full max-w-[840px]'}`}>
+        {!exportMode && (
+          <>
+            <button onClick={() => {
+              if (currentPage === 0) {
+                setCoverState('front');
+                playPageFlipSound();
+              } else {
+                flipBookRef.current?.pageFlip().flipPrev();
+              }
+            }} className="absolute -left-12 p-3 text-slate-400 hover:text-amber-500 z-20">
+              <ChevronLeft className="w-8 h-8" />
+            </button>
+            <button onClick={() => {
+              if (currentPage >= 10) {
+                setCoverState('back');
+                playPageFlipSound();
+              } else {
+                flipBookRef.current?.pageFlip().flipNext();
+              }
+            }} className="absolute -right-12 p-3 text-slate-400 hover:text-amber-500 z-20">
+              <ChevronRight className="w-8 h-8" />
+            </button>
+          </>
+        )}
+
+        <div className={`relative overflow-visible rounded-md bg-[#eef1f6] ${exportMode ? 'w-[800px] h-fit' : 'w-[800px] h-[520px] shadow-[0_30px_90px_rgba(0,0,0,0.6)]'}`}>
+          {!exportMode && (
+            <>
+              {/* Thin sharp spine shadow to fix the gap */}
+              <div className="absolute left-[50%] top-0 bottom-0 w-[4px] -translate-x-[50%] bg-slate-500/30 shadow-[0_0_15px_3px_rgba(0,0,0,0.25)] z-30 pointer-events-none" />
+              <div className="absolute left-[50%] top-0 bottom-0 w-[1px] -translate-x-[50%] bg-slate-400/80 z-30 pointer-events-none" />
+            </>
+          )}
+
+          <FlipWrapper>
             {/* 01: IDENTITY */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden flex flex-col">
               <GuillocheBg />
@@ -299,7 +351,7 @@ export default function PassportBook({ data, currentPage, setCurrentPage }: any)
                  <div className="flex flex-col w-full h-full justify-between pt-1">
                    {/* Header */}
                    <div className="flex flex-col items-center w-full border-b-[1.5px] border-slate-400 pb-1.5 mb-2">
-                     <h2 className="text-[20px] font-sans tracking-tighter text-slate-700 font-bold transform scale-y-[1.15]">INTERNATIONAL PASSPORT</h2>
+                     <h2 className="text-[20px] font-sans tracking-tighter text-slate-700 font-bold transform scale-y-[1.15]">DEVELOPER PASSPORT</h2>
                      <div className="flex justify-between w-full text-[7px] font-bold text-slate-500 px-4 mt-2">
                         <div className="flex flex-col items-center gap-0.5"><span>TYPE</span><span className="text-[10px] text-slate-800 font-serif">P</span></div>
                         <div className="flex flex-col items-center gap-0.5"><span>COUNTRY CODE</span><span className="text-[10px] text-slate-800 font-serif">{data.user.location ? data.user.location.slice(0,3).toUpperCase() : 'DEV'}</span></div>
@@ -695,7 +747,7 @@ export default function PassportBook({ data, currentPage, setCurrentPage }: any)
               </div>
             </div>
 
-          </HTMLFlipBook>
+          </FlipWrapper>
         </div>
       </div>
     </div>
