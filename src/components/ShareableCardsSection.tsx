@@ -205,7 +205,7 @@ function CardShell({ data, id, children }: { data: PassportData; id: string; chi
       <div className="px-6 pt-6 pb-5 flex items-center gap-4 bg-[#0d1524] border-b border-white/5 relative z-10">
         <div className="relative shrink-0">
           <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-b from-[#e9b646] to-[#b47d2b] shadow-lg">
-            <img src={data.user.avatarUrl} alt="" className="w-full h-full rounded-full object-cover bg-[#0a0f1a]" />
+            <img src={data.user.avatarUrl} alt="" crossOrigin="anonymous" className="w-full h-full rounded-full object-cover bg-[#0a0f1a]" />
           </div>
         </div>
         
