@@ -90,32 +90,32 @@ type SearchCount = {
 const REST_API_VERSION = "2026-03-10";
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-const languageGroups: Record<string, string> = {
-  TypeScript: "Frontend",
-  JavaScript: "Frontend",
-  HTML: "Frontend",
-  CSS: "Frontend",
-  SCSS: "Frontend",
-  Vue: "Frontend",
-  Svelte: "Frontend",
-  Python: "AI",
-  R: "AI",
-  Jupyter: "AI",
-  Go: "Backend",
-  Rust: "Backend",
-  Java: "Backend",
-  C: "Backend",
-  "C++": "Backend",
-  "C#": "Backend",
-  PHP: "Backend",
-  Ruby: "Backend",
-  Kotlin: "Mobile",
-  Swift: "Mobile",
-  Dart: "Mobile",
-  Shell: "DevOps",
-  Dockerfile: "DevOps",
-  HCL: "Cloud",
-  SQL: "Database",
+const languageGroups: Record<string, string[]> = {
+  TypeScript: ["Frontend", "Backend"],
+  JavaScript: ["Frontend", "Backend"],
+  HTML: ["Frontend"],
+  CSS: ["Frontend"],
+  SCSS: ["Frontend"],
+  Vue: ["Frontend"],
+  Svelte: ["Frontend"],
+  Python: ["Backend", "AI"],
+  R: ["AI"],
+  Jupyter: ["AI"],
+  Go: ["Backend"],
+  Rust: ["Backend"],
+  Java: ["Backend"],
+  C: ["Backend"],
+  "C++": ["Backend"],
+  "C#": ["Backend"],
+  PHP: ["Backend"],
+  Ruby: ["Backend"],
+  Kotlin: ["Mobile"],
+  Swift: ["Mobile"],
+  Dart: ["Mobile"],
+  Shell: ["DevOps"],
+  Dockerfile: ["DevOps"],
+  HCL: ["Cloud"],
+  SQL: ["Database"],
 };
 
 const topicGroups: Record<string, string> = {
@@ -669,10 +669,9 @@ export async function GET(
     const groupScores = new Map<string, number>();
     for (const repo of sourceRepos) {
       if (repo.language && languageGroups[repo.language]) {
-        groupScores.set(
-          languageGroups[repo.language],
-          (groupScores.get(languageGroups[repo.language]) ?? 0) + 2,
-        );
+        for (const group of languageGroups[repo.language]) {
+          groupScores.set(group, (groupScores.get(group) ?? 0) + 2);
+        }
       }
       for (const topic of repo.topics ?? []) {
         const normalized = topic.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -694,15 +693,51 @@ export async function GET(
       "Testing",
       "Mobile",
       "AI",
-    ].map((name) => ({
-      name,
-      strength: Math.min(100, 24 + (groupScores.get(name) ?? 0) * 12),
-      tools: sourceRepos
-        .flatMap((repo) => [repo.language, ...(repo.topics ?? [])])
-        .filter((value): value is string => Boolean(value))
-        .filter((value, index, array) => array.indexOf(value) === index)
-        .slice(0, 8),
-    }));
+    ].map((categoryName) => {
+      // Collect tools (languages + topics) that belong to THIS category
+      const categoryTools = new Set<string>();
+
+      for (const repo of sourceRepos) {
+        // Check if the repo's primary language belongs to this category
+        if (repo.language && languageGroups[repo.language]?.includes(categoryName)) {
+          categoryTools.add(repo.language);
+        }
+        // Check each topic
+        for (const topic of repo.topics ?? []) {
+          const normalized = topic.toLowerCase().replace(/[^a-z0-9]/g, "");
+          if (topicGroups[normalized] === categoryName) {
+            // Use the readable topic name (capitalize first letter)
+            const readable = topic.charAt(0).toUpperCase() + topic.slice(1);
+            categoryTools.add(readable);
+          }
+        }
+      }
+
+      // Also add well-known frameworks from languages in this category
+      // e.g. if someone uses TypeScript + has "react" topic, React goes to Frontend
+      const knownTools: Record<string, string[]> = {
+        Frontend: ["React", "Next.js", "Vue", "Svelte", "Angular", "Tailwind CSS", "HTML", "CSS"],
+        Backend: ["Node.js", "Express", "Django", "FastAPI", "Go", "Rust", "Java", "PHP", "Ruby", "C", "C++", "C#"],
+        Database: ["PostgreSQL", "MySQL", "MongoDB", "Redis", "SQL", "Firebase", "Convex"],
+        Cloud: ["AWS", "Azure", "GCP", "Cloudflare", "HCL"],
+        DevOps: ["Docker", "Kubernetes", "Shell", "Dockerfile"],
+        Testing: ["Vitest", "Jest", "Playwright"],
+        Mobile: ["Kotlin", "Swift", "Dart", "Flutter", "React Native"],
+        AI: ["Python", "R", "Jupyter"],
+      };
+
+      return {
+        name: categoryName,
+        strength: Math.min(100, 24 + (groupScores.get(categoryName) ?? 0) * 12),
+        tools: [...categoryTools]
+          .filter((tool) => {
+            // Filter out category names themselves (e.g. "frontend" is not a tool)
+            const lower = tool.toLowerCase();
+            return !["frontend", "backend", "database", "cloud", "devops", "testing", "mobile", "ai", "ml", "llm"].includes(lower);
+          })
+          .slice(0, 6),
+      };
+    }).filter((cat) => cat.tools.length > 0);
 
     const organizations = orgResult.organizations;
     const score =

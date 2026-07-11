@@ -1,20 +1,42 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import Image from "next/image";
+import React, { useState, FormEvent, useRef, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { 
-  Github, Download, Printer, Sparkles, Shield, 
-  HelpCircle, Share2, Layers, RefreshCw, Star, 
-  Code, Info, ChevronRight, Check, AlertCircle
+import {
+  Github,
+  Map,
+  Trophy,
+  Activity,
+  Code2,
+  Terminal,
+  Zap,
+  Globe,
+  Star,
+  GitBranch,
+  Shield,
+  Download,
+  Share2,
+  ChevronRight,
+  ChevronLeft,
+  Sparkles,
+  Printer,
+  HelpCircle,
+  Layers,
+  RefreshCw,
+  Code,
+  Info,
+  Check,
+  AlertCircle
 } from "lucide-react";
-import { Toaster, toast } from "sonner";
-import confetti from "canvas-confetti";
 import { toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
+import confetti from "canvas-confetti";
+import { Toaster, toast } from "sonner";
+import Image from "next/image";
 
-import PassportBook from "@/components/PassportBook";
 import ShareableCardsSection from "@/components/ShareableCardsSection";
+import { LoaderScreen } from "@/components/LoaderScreen";
+import PassportBook from "@/components/PassportBook";
 
 type PassportData = {
   user: {
@@ -397,6 +419,8 @@ export default function DeveloperPassportApp() {
     }`}>
       <Toaster position="bottom-right" theme={theme.toLowerCase().includes("light") ? "light" : "dark"} />
       
+      {loading && <LoaderScreen username={username} />}
+      
       {/* Background grids */}
       <div className="absolute inset-0 pointer-events-none opacity-25 z-0"
         style={{
@@ -501,71 +525,7 @@ export default function DeveloperPassportApp() {
           )}
         </div>
 
-        <section className="mb-14 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-5">
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/50 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.25)]">
-            <div className="mb-5 flex items-center justify-between gap-4 border-b border-slate-800/70 pb-3">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-amber-400/80">
-                  Scouting Metrics
-                </p>
-                <h3 className="mt-1 font-serif text-2xl font-bold text-white">
-                  REST activity ledger
-                </h3>
-              </div>
-              <Info className="h-5 w-5 text-slate-500" />
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
-              {data.scouting.map((metric) => (
-                <div key={metric.label} className="group">
-                  <div className="mb-1.5 flex items-baseline justify-between gap-3">
-                    <span className="text-sm font-semibold text-slate-200">{metric.label}</span>
-                    <span className="font-mono text-[11px] text-slate-500">{metric.detail}</span>
-                  </div>
-                  <div className="relative h-1.5 overflow-hidden rounded-full bg-slate-800">
-                    <div
-                      className="h-full rounded-full bg-amber-300 shadow-[0_0_18px_rgba(240,217,140,0.35)]"
-                      style={{ width: `${Math.max(2, metric.score)}%` }}
-                    />
-                  </div>
-                  <div className="mt-1 flex items-center justify-between">
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600">
-                      {metric.source}
-                    </span>
-                    <span className="font-mono text-sm font-black text-amber-100">{metric.score}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/50 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.25)]">
-            <div className="mb-5 border-b border-slate-800/70 pb-3">
-              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-amber-400/80">
-                Playstyles
-              </p>
-              <h3 className="mt-1 font-serif text-2xl font-bold text-white">
-                Activity readout
-              </h3>
-            </div>
-
-            <div className="space-y-3">
-              {data.playstyles.map((style) => (
-                <div
-                  key={style}
-                  className="flex items-center gap-3 rounded-xl border border-slate-800/70 bg-slate-900/50 px-4 py-3"
-                >
-                  <Check className="h-4 w-4 text-amber-300" />
-                  <span className="text-sm font-semibold text-slate-200">{style}</span>
-                </div>
-              ))}
-            </div>
-
-            <p className="mt-4 text-xs leading-relaxed text-slate-500">
-              GitHub does not expose every badge-like label as a native field. The labels here are derived, but the evidence comes from REST search, repositories, events, organizations, languages, and the public contribution calendar.
-            </p>
-          </div>
-        </section>
 
         {/* The Booklet Spread Container */}
         <div className="mb-20">
