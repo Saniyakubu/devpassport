@@ -24,7 +24,7 @@ export function PassportExperience({
 }: PassportExperienceProps) {
   return (
     <>
-      <div aria-hidden="true">
+      <div aria-hidden="true" className="fixed left-[-10000px] top-0 h-0 overflow-hidden">
         <PassportBook data={data} exportMode />
       </div>
 

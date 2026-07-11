@@ -36,7 +36,7 @@ export default function DeveloperPassportApp() {
         }}
       />
 
-      <div className="relative z-10 mx-auto w-full max-w-[1200px] px-4 py-8">
+      <div className="relative z-10 mx-auto w-full max-w-[1200px] px-4 pb-0 pt-8">
         <AppHeader />
         <HeroSection />
         <UsernameForm
