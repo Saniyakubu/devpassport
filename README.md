@@ -1,8 +1,8 @@
-# GitID
+# devpassport
 
 Your GitHub identity, beautifully visualized.
 
-GitID generates an interactive developer passport and premium shareable cards from a GitHub profile. It turns public GitHub activity into a polished portfolio artifact: a passport-style booklet, stats cards, achievements, coding habits, language breakdowns, tech stack signals, and exportable images/PDFs.
+devpassport generates an interactive developer passport and premium shareable cards from a GitHub profile. It turns public GitHub activity into a polished portfolio artifact: a passport-style booklet, stats cards, achievements, coding habits, language breakdowns, tech stack signals, and exportable images/PDFs.
 
 ## What It Does
 
@@ -21,7 +21,7 @@ GitID generates an interactive developer passport and premium shareable cards fr
 Production URL:
 
 ```txt
-https://gitid.vercel.app
+https://devpassport.vercel.app
 ```
 
 ## Tech Stack
@@ -70,7 +70,7 @@ src/
 
 ## How The GitHub Data Works
 
-GitID is REST-first.
+devpassport is REST-first.
 
 The API route calls GitHub REST endpoints for:
 
@@ -83,7 +83,7 @@ The API route calls GitHub REST endpoints for:
 - Pull request search counts
 - Issue search counts
 
-GitHub does not expose the full contribution calendar as a normal REST endpoint. For active days and public contribution totals, GitID reads the public GitHub contribution calendar markup and falls back to public events when needed.
+GitHub does not expose the full contribution calendar as a normal REST endpoint. For active days and public contribution totals, devpassport reads the public GitHub contribution calendar markup and falls back to public events when needed.
 
 Some fields are intentionally derived, not native GitHub fields:
 
