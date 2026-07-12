@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://gitid.vercel.app/sitemap.xml
+Sitemap: https://devpassport.vercel.app/sitemap.xml

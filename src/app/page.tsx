@@ -4,8 +4,8 @@ import DeveloperPassportApp from "./developer-passport-app";
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "GitID",
-  url: "https://gitid.vercel.app",
+  name: "devpassport",
+  url: "https://devpassport.vercel.app",
   description:
     "Generate stunning developer passports and shareable cards from your GitHub profile. Visualize your tech stack, achievements, and coding DNA.",
   applicationCategory: "DeveloperApplication",
@@ -20,7 +20,7 @@ const jsonLd = {
     name: "Saniya Kubu",
     url: "https://github.com/Saniyakubu",
   },
-  screenshot: "https://gitid.vercel.app/og-image.png",
+  screenshot: "https://devpassport.vercel.app/og-image.png",
   featureList: [
     "Interactive Developer Passport Booklet",
     "Shareable GitHub Stats Cards",

@@ -20,17 +20,17 @@ const fraunces = Fraunces({
   display: "swap",
 });
 
-const siteUrl = "https://gitid.vercel.app";
+const siteUrl = "https://devpassport.vercel.app";
 
 export const metadata: Metadata = {
   title: {
-    default: "GitID — Your GitHub Identity, Beautifully Visualized",
-    template: "%s | GitID",
+    default: "devpassport — Your GitHub Identity, Beautifully Visualized",
+    template: "%s | devpassport",
   },
   description:
-    "GitID generates stunning developer passports and shareable cards from your GitHub profile. Visualize your tech stack, contributions, achievements, and coding habits in a premium interactive format.",
+    "devpassport generates stunning developer passports and shareable cards from your GitHub profile. Visualize your tech stack, contributions, achievements, and coding habits in a premium interactive format.",
   keywords: [
-    "GitID",
+    "devpassport",
     "GitHub",
     "developer passport",
     "GitHub profile card",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Saniya Kubu", url: "https://github.com/Saniyakubu" }],
   creator: "Saniya Kubu",
-  publisher: "GitID",
+  publisher: "devpassport",
   metadataBase: new URL(siteUrl),
   alternates: {
     canonical: "/",
@@ -57,8 +57,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    siteName: "GitID",
-    title: "GitID — Your GitHub Identity, Beautifully Visualized",
+    siteName: "devpassport",
+    title: "devpassport — Your GitHub Identity, Beautifully Visualized",
     description:
       "Generate stunning developer passports and shareable cards from your GitHub profile. Visualize your tech stack, achievements, and coding DNA.",
     images: [
@@ -66,14 +66,14 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "GitID — GitHub Developer Passport Generator",
+        alt: "devpassport — GitHub Developer Passport Generator",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "GitID — Your GitHub Identity, Beautifully Visualized",
+    title: "devpassport — Your GitHub Identity, Beautifully Visualized",
     description:
       "Generate stunning developer passports and shareable cards from your GitHub profile.",
     images: ["/og-image.png"],

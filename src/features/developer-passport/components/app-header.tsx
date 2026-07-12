@@ -9,7 +9,7 @@ export function AppHeader() {
         </div>
         <div>
           <h1 className="font-serif text-xl font-bold uppercase leading-none tracking-wide text-amber-100">
-            GitID
+            devpassport
           </h1>
           <span className="mt-1 block font-mono text-[10px] uppercase tracking-widest text-slate-500">
             GitHub Identity Visualizer
@@ -24,7 +24,9 @@ export function AppHeader() {
         className="flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900 px-4 py-2 text-slate-300 transition-colors hover:border-slate-700 hover:bg-slate-800 hover:text-white"
       >
         <Github className="h-4 w-4" />
-        <span className="text-xs font-bold uppercase tracking-widest">Star on GitHub</span>
+        <span className="text-xs font-bold uppercase tracking-widest">
+          Star on GitHub
+        </span>
         <Star className="h-3.5 w-3.5 text-amber-500" />
       </a>
     </header>

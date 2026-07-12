@@ -396,7 +396,7 @@ function CardShell({
         <div className="flex items-center gap-2">
           <Github className="w-4 h-4 text-[#e9b646]" />
           <span className="text-[#a1b0cb] text-[9px] font-mono tracking-wider">
-            GITID • {new Date().getFullYear()}
+            devpassport • {new Date().getFullYear()}
           </span>
         </div>
         <span className="text-[#e9b646] text-[9px] font-mono tracking-wider">

@@ -1,6 +1,6 @@
 {
-  "name": "GitID",
-  "short_name": "GitID",
+  "name": "devpassport",
+  "short_name": "devpassport",
   "description": "Your GitHub Identity, Beautifully Visualized. Generate developer passports and shareable cards.",
   "start_url": "/",
   "display": "standalone",
