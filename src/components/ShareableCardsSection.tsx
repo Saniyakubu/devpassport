@@ -20,7 +20,7 @@ import { FaAws, FaJava } from "react-icons/fa";
 import { TbBrandCSharp } from "react-icons/tb";
 import { trackPassportExported } from "@/features/developer-passport/utils/analytics";
 
-/* ── Types ── */
+
 type PassportData = {
   user: {
     login: string; id: number; avatarUrl: string; url: string;
@@ -61,7 +61,7 @@ type PassportData = {
   generatedAt: string;
 };
 
-/* ── Icon & Color Map ── */
+
 const LANG_MAP: Record<string, { icon: React.ElementType, color: string }> = {
   TypeScript: { icon: SiTypescript, color: "#3178c6" },
   JavaScript: { icon: SiJavascript, color: "#f1e05a" },
@@ -119,7 +119,7 @@ function CodeIconFallback(props: any) {
   );
 }
 
-/* ── UI Components ── */
+
 
 function QRCodePlaceholder() {
   return (
@@ -135,7 +135,6 @@ function GoldSeal({ name, icon: Icon, unlocked, desc }: { name: string, icon: an
   return (
     <div className={`flex flex-col items-center text-center transition-all ${unlocked ? 'opacity-100' : 'opacity-30 grayscale'}`}>
       <div className="relative w-12 h-12 mb-1.5 flex items-center justify-center">
-        {/* Scalloped edge SVG */}
         <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
           <path 
             fill="url(#goldGradient)" 
@@ -195,14 +194,13 @@ function ProgressRing({ percent, color, label, icon: Icon }: { percent: number, 
   );
 }
 
-/* ── Card Shell Wrapper ── */
+
 function CardShell({ data, id, children }: { data: PassportData; id: string; children: React.ReactNode }) {
   return (
     <div
       id={id}
       className="w-[400px] h-[580px] rounded-2xl bg-[#0a0f1a] relative overflow-hidden select-none shadow-2xl border border-white/10 flex flex-col font-sans"
     >
-      {/* Premium minimal header */}
       <div className="px-6 pt-6 pb-5 flex items-center gap-4 bg-[#0d1524] border-b border-white/5 relative z-10">
         <div className="relative shrink-0">
           <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-b from-[#e9b646] to-[#b47d2b] shadow-lg">
@@ -238,13 +236,12 @@ function CardShell({ data, id, children }: { data: PassportData; id: string; chi
          <span className="text-[#e9b646] text-[9px] font-mono tracking-wider">GID-{String(data.user.id).slice(0, 5)}</span>
       </div>
       
-      {/* Subtle background glow */}
       <div className="absolute top-[30%] left-[50%] -translate-x-[50%] -translate-y-[50%] w-[300px] h-[300px] bg-[#e9b646]/5 rounded-full blur-[80px] pointer-events-none z-0" />
     </div>
   );
 }
 
-/* ── Card Content Variants ── */
+
 
 function IdentityCard({ data }: { data: PassportData }) {
   const primaryLang = data.languages[0]?.name || "Software";
@@ -259,7 +256,6 @@ function IdentityCard({ data }: { data: PassportData }) {
 
   return (
     <div className="flex flex-col h-full z-10">
-      {/* Top Section: Level & Primary Language */}
       <div className="flex justify-between items-center mb-4">
         <div className="px-3 py-1 rounded border border-[#e9b646]/30 bg-[#e9b646]/10 flex items-center gap-2">
            <span className="text-[#e9b646] text-[9px] font-black uppercase tracking-wider">Level {levelNum}</span>
@@ -274,7 +270,6 @@ function IdentityCard({ data }: { data: PassportData }) {
         </div>
       </div>
 
-      {/* Scouting Metrics Grid */}
       <div className="grid grid-cols-2 gap-x-3 gap-y-2 mb-3 flex-1 content-start">
          {data.scouting.slice(0, 8).map((metric) => {
             const { num, text } = parseDetail(metric.detail);
@@ -290,7 +285,6 @@ function IdentityCard({ data }: { data: PassportData }) {
          })}
       </div>
 
-      {/* Playstyles List */}
       <div className="mt-auto bg-black/20 rounded-lg p-2.5 border border-white/5">
          <div className="text-[#a1b0cb] text-[8px] font-mono uppercase tracking-widest mb-1.5 flex items-center gap-2">
             <Activity className="w-3 h-3 text-[#e9b646]" /> Playstyles
@@ -580,7 +574,7 @@ const CARDS = [
   { id: "minimal", label: "Minimal Card", Component: MinimalCard },
 ];
 
-/* ── Exported Wrapper ── */
+
 export default function ShareableCardsSection({ data, handleExportCard }: { data: PassportData; handleExportCard: (idx: number) => Promise<void> }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "center", containScroll: false, slidesToScroll: 1 });
   const [selectedIdx, setSelectedIdx] = useState(0);
