@@ -10,7 +10,6 @@ import {
 
 import { playPageFlipSound } from "@/features/developer-passport/utils/page-flip-sound";
 
-// Dynamically import react-pageflip to bypass Next.js SSR environment constraints
 const HTMLFlipBook = dynamic(() => import("react-pageflip"), {
   ssr: false,
   loading: () => (
@@ -41,7 +40,6 @@ function MiniQr() {
   );
 }
 
-/* ── Custom Visa Stamp Component ── */
 function VisaStamp({ label, date, color, type }: { label: string, date: string, color: string, type: 'circle' | 'rect' | 'hex' }) {
   const getStyle = () => {
     switch (color) {
@@ -165,7 +163,7 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
 
   const handleOpenCover = () => {
     setCoverState('open');
-    setCurrentPage(0); // 0-indexed for pageflip spread logic
+    setCurrentPage(0);
     playPageFlipSound();
   };
 
@@ -176,14 +174,13 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
   };
 
   const isHighLevel = data.level.xp >= 5000 || Math.floor(data.level.xp / 100) >= 50;
-  const coverColor = isHighLevel ? "#6B1D25" : "#061A3A"; // Burgundy for high level
+  const coverColor = isHighLevel ? "#6B1D25" : "#061A3A";
   const passportNo = `DP-${String(data.user.id).slice(0, 4)}-${data.user.login.toUpperCase().slice(0, 4)}`;
 
   if (coverState === 'front' && !exportMode) {
     return (
       <div className="relative flex flex-col items-center justify-center min-h-[580px] w-full py-8 select-none">
         
-        {/* Subtle hint indicator */}
         <div className="absolute top-2 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce text-amber-500/80 z-20 pointer-events-none">
           <span className="text-[10px] uppercase tracking-widest font-bold font-sans bg-slate-900/90 px-3 py-1.5 rounded-full border border-amber-500/30 shadow-xl backdrop-blur-sm">Click to open passport</span>
           <div className="w-px h-8 bg-gradient-to-b from-amber-500/50 to-transparent mt-1" />
@@ -207,7 +204,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
             }
             .group:hover { animation: none; transform: translateY(-16px); box-shadow: 0 45px 120px rgba(0,0,0,0.7); }
           `}} />
-          {/* Spine crease */}
           <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-black/50 via-transparent to-black/20 z-10 rounded-l-md" />
 
           <div className="flex flex-col items-center justify-between h-full w-full py-16 px-10 z-0">
@@ -215,12 +211,10 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               DEVELOPER<br/>PASSPORT
             </h2>
             
-            {/* GitHub Logo icon */}
             <div className="w-40 h-40 flex items-center justify-center relative my-auto">
                <Github className="w-32 h-32 text-[#e2c179]" strokeWidth={1} />
             </div>
 
-            {/* Bottom emblem */}
             <div className="mb-2 w-11 h-7 flex flex-col items-center justify-center relative">
                <svg viewBox="0 0 40 30" className="w-full h-full text-[#e2c179] fill-current">
                   <rect x="0" y="10" width="40" height="12" />
@@ -245,7 +239,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
             backgroundColor: coverColor,
           }}
         >
-          {/* Spine crease on the right */}
           <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-black/50 via-transparent to-black/20 z-10 rounded-r-md" />
 
           <div className="flex flex-col items-center justify-center h-full w-full py-16 px-10 z-0 opacity-70">
@@ -320,7 +313,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
         <div className={`relative overflow-visible rounded-md bg-[#eef1f6] ${exportMode ? 'w-[800px] h-fit' : 'w-[800px] h-[520px] shadow-[0_30px_90px_rgba(0,0,0,0.6)]'}`}>
           {!exportMode && (
             <>
-              {/* Thin sharp spine shadow to fix the gap */}
               <div className="absolute left-[50%] top-0 bottom-0 w-[4px] -translate-x-[50%] bg-slate-500/30 shadow-[0_0_15px_3px_rgba(0,0,0,0.25)] z-30 pointer-events-none" />
               <div className="absolute left-[50%] top-0 bottom-0 w-[1px] -translate-x-[50%] bg-slate-400/80 z-30 pointer-events-none" />
             </>
@@ -334,12 +326,10 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
             playPageFlipSound={playPageFlipSound} 
             flipBookRef={flipBookRef}
           >
-            {/* 01: IDENTITY */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden flex flex-col">
               <GuillocheBg />
               
               <div className="flex h-full relative z-10 p-5 pl-[3rem]">
-                 {/* Vertical Passport Number */}
                  <div className="absolute left-2 top-0 bottom-0 w-8 flex items-center justify-center">
                     <div className="transform -rotate-90 whitespace-nowrap text-[22px] font-sans tracking-[0.2em] text-slate-600 font-normal mix-blend-multiply opacity-70">
                        AC {data.user.id.toString().padStart(10, '0')}
@@ -347,7 +337,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
                  </div>
 
                  <div className="flex flex-col w-full h-full justify-between pt-1">
-                   {/* Header */}
                    <div className="flex flex-col items-center w-full border-b-[1.5px] border-slate-400 pb-1.5 mb-2">
                      <h2 className="text-[20px] font-sans tracking-tighter text-slate-700 font-bold transform scale-y-[1.15]">DEVELOPER PASSPORT</h2>
                      <div className="flex justify-between w-full text-[7px] font-bold text-slate-500 px-4 mt-2">
@@ -357,7 +346,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
                      </div>
                    </div>
 
-                   {/* Body */}
                    <div className="flex gap-4 items-stretch flex-1">
                      <div className="w-[32%] flex flex-col items-center gap-2 relative mt-1">
                         <div className="w-full aspect-[3/4] bg-white p-1 shadow-sm border border-slate-200">
@@ -406,7 +394,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
                      </div>
                    </div>
                    
-                   {/* Footer MRZ */}
                    <div className="w-full mt-3 font-mono text-[10px] tracking-[0.14em] text-slate-700 font-bold leading-tight break-all border-t-[1.5px] border-slate-400 pt-2 pb-1">
                      {'P<DEV' + (data.user.name || data.user.login).toUpperCase().replace(/[^A-Z]/g, '<').padEnd(34, '<')}
                      <br />
@@ -416,7 +403,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               </div>
             </div>
 
-            {/* 02: STATISTICS */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden">
               <GuillocheBg />
               <div className="relative z-10 p-6 h-full flex flex-col">
@@ -444,7 +430,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               </div>
             </div>
 
-            {/* 03: LANGUAGES */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden">
               <GuillocheBg />
               <div className="relative z-10 p-6 h-full flex flex-col">
@@ -478,7 +463,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               </div>
             </div>
 
-            {/* 04: TECH STACK */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden">
               <GuillocheBg />
               <div className="relative z-10 p-6 h-full flex flex-col">
@@ -508,7 +492,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               </div>
             </div>
 
-            {/* 05: VISA STAMPS */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden">
               <GuillocheBg />
               <div className="relative z-10 p-6 h-full flex flex-col">
@@ -530,7 +513,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               </div>
             </div>
 
-            {/* 06: ACHIEVEMENTS */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden">
               <GuillocheBg />
               <div className="relative z-10 p-6 h-full flex flex-col">
@@ -555,7 +537,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               </div>
             </div>
 
-            {/* 07: DEVELOPER LEVEL */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden">
               <GuillocheBg />
               <div className="relative z-10 p-6 h-full flex flex-col items-center">
@@ -566,7 +547,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
                 <div className="flex-1 flex flex-col items-center justify-center w-full">
                   <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-4">CURRENT CLASSIFICATION</span>
                   
-                  {/* Rank Badge */}
                   <div className="w-32 h-32 rounded-full border-[3px] border-slate-400 flex items-center justify-center mb-4 relative">
                     <div className="absolute inset-[6px] rounded-full border border-dashed border-slate-400/50" />
                     <div className="flex flex-col items-center">
@@ -590,7 +570,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               </div>
             </div>
 
-            {/* 08: TIMELINE */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden">
               <GuillocheBg />
               <div className="relative z-10 p-6 h-full flex flex-col">
@@ -614,7 +593,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               </div>
             </div>
 
-            {/* 09: ORGANIZATIONS */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden">
               <GuillocheBg />
               <div className="relative z-10 p-6 h-full flex flex-col">
@@ -642,7 +620,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               </div>
             </div>
 
-            {/* 10: CODING HABITS */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden">
               <GuillocheBg />
               <div className="relative z-10 p-6 h-full flex flex-col">
@@ -670,7 +647,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               </div>
             </div>
 
-            {/* 11: DEVELOPER DNA */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden">
               <GuillocheBg />
               <div className="relative z-10 p-6 h-full flex flex-col">
@@ -703,7 +679,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
               </div>
             </div>
 
-            {/* 12: VERIFICATION */}
             <div className="h-full relative p-0 text-slate-800 bg-[#eef1f6] overflow-hidden">
               <GuillocheBg />
               <div className="relative z-10 p-6 h-full flex flex-col items-center text-center">
@@ -714,7 +689,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
                 <div className="flex-1 flex flex-col items-center justify-center w-full">
                   <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-4">VERIFIED BY</span>
                   
-                  {/* GitHub Logo wireframe */}
                   <div className="w-20 h-20 rounded-full border-[2px] border-slate-400 flex items-center justify-center mb-3">
                     <Github className="w-10 h-10 text-slate-700" />
                   </div>
@@ -738,7 +712,6 @@ export default function PassportBook({ data, currentPage, setCurrentPage, export
                   </div>
                 </div>
 
-                {/* Footer MRZ */}
                 <div className="w-full font-mono text-[8px] tracking-[0.12em] text-slate-600 font-bold leading-tight break-all border-t-[1.5px] border-slate-400 pt-2 mt-3">
                   {'V<GITHUB<VERIFIED<<<' + (data.user.login).toUpperCase().padEnd(20, '<')}
                 </div>
