@@ -5,6 +5,7 @@ import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 
 import type { PassportData } from "../types/passport";
+import { trackPassportExported } from "../utils/analytics";
 
 const CARD_NAMES = [
   "identity",
@@ -56,6 +57,7 @@ export function usePassportExports(data: PassportData | null) {
       link.href = dataUrl;
       link.click();
       toast.success("Card downloaded successfully!", { id: loadToast });
+      trackPassportExported("card_png", data, cardName);
     } catch (error) {
       console.error(error);
       toast.error("Failed to generate image. Please try again.", { id: loadToast });
@@ -89,6 +91,7 @@ export function usePassportExports(data: PassportData | null) {
 
       pdf.save(`${data.user.login}-developer-passport.pdf`);
       toast.success("PDF saved successfully!", { id: loadToast });
+      trackPassportExported("passport_pdf", data);
     } catch (error) {
       console.error(error);
       toast.error("Failed to generate PDF.", { id: loadToast });
@@ -114,6 +117,7 @@ export function usePassportExports(data: PassportData | null) {
       link.href = dataUrl;
       link.click();
       toast.success("Screenshot saved!", { id: loadToast });
+      trackPassportExported("passport_spread_png", data);
     } catch (error) {
       console.error(error);
       toast.error("Failed to capture screenshot.", { id: loadToast });

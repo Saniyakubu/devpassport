@@ -18,6 +18,7 @@ import {
 } from "react-icons/si";
 import { FaAws, FaJava } from "react-icons/fa";
 import { TbBrandCSharp } from "react-icons/tb";
+import { trackPassportExported } from "@/features/developer-passport/utils/analytics";
 
 /* ── Types ── */
 type PassportData = {
@@ -619,6 +620,7 @@ export default function ShareableCardsSection({ data, handleExportCard }: { data
       link.href = dataUrl;
       link.click();
       toast.success("Card downloaded successfully!", { id: loadToast });
+      trackPassportExported("card_png", data, cardName);
     } catch (e) {
       console.error(e);
       toast.error("Failed to generate image.", { id: loadToast });

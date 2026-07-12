@@ -8,6 +8,11 @@ import { toast } from "sonner";
 
 import { fetchPassportData } from "../services/passport-api";
 import type { PassportData } from "../types/passport";
+import {
+  trackPassportGenerateFailed,
+  trackPassportGenerated,
+  trackPassportGenerateStarted,
+} from "../utils/analytics";
 
 function triggerConfetti() {
   confetti({
@@ -33,6 +38,7 @@ export function usePassportGenerator() {
     setLoading(true);
     setError("");
     const loadToast = toast.loading(`Analyzing GitHub profile for @${cleanUsername}...`);
+    trackPassportGenerateStarted();
 
     try {
       const payload = await queryClient.fetchQuery({
@@ -42,6 +48,7 @@ export function usePassportGenerator() {
 
       setData(payload);
       toast.success("Passport data loaded successfully!", { id: loadToast });
+      trackPassportGenerated(payload);
       triggerConfetti();
     } catch (fetchError) {
       const message =
@@ -51,6 +58,7 @@ export function usePassportGenerator() {
 
       setError(message);
       toast.error(message || "GitHub fetch failed", { id: loadToast });
+      trackPassportGenerateFailed(message);
     } finally {
       setLoading(false);
     }
