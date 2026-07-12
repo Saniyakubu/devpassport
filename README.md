@@ -40,6 +40,7 @@ https://gitid.vercel.app
 - lucide-react
 - react-icons
 - Vercel Analytics and Speed Insights
+- PostHog product analytics
 
 ## Project Structure
 
@@ -103,11 +104,28 @@ Create `.env.local` if you want better reliability:
 
 ```env
 GITHUB_TOKEN=your_github_token_here
+NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN=your_posthog_project_token
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
 With a token, the server can make authenticated REST requests. If the token belongs to the same GitHub user being generated, private organization memberships may be visible through the authenticated `/user/orgs` endpoint, depending on token permissions and GitHub account visibility.
 
 Do not expose `GITHUB_TOKEN` to the browser. This project only reads it on the server.
+
+The PostHog variables are optional. When they are missing, the app runs normally and analytics calls become no-ops. Use the US or EU PostHog host from your PostHog project settings.
+
+## Product Analytics
+
+The app keeps Vercel Analytics for page-level traffic and adds PostHog for product behavior.
+
+Tracked PostHog events:
+
+- `passport_generate_started`
+- `passport_generated`
+- `passport_generate_failed`
+- `passport_exported`
+
+Use `passport_generated` to answer "how many passports have been generated?" The event includes aggregate GitHub-derived metrics such as repository count, stars, contributions, active days, developer level, primary language, organization count, and unlocked achievement count. It intentionally does not include the raw GitHub username by default.
 
 ## Getting Started
 
@@ -170,6 +188,8 @@ Recommended environment variable:
 
 ```env
 GITHUB_TOKEN=your_github_token_here
+NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN=your_posthog_project_token
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
 The app includes:
@@ -183,6 +203,7 @@ The app includes:
 - Web app manifest
 - Vercel Analytics
 - Vercel Speed Insights
+- PostHog product analytics
 
 ## Notes For Contributors
 
