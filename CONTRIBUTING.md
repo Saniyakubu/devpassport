@@ -1,6 +1,6 @@
-# Contributing to GitID
+# Contributing to devpassport
 
-First off, thank you for considering contributing to GitID! It's people like you that make GitID such a great tool for the open-source community.
+First off, thank you for considering contributing to devpassport! It's people like you that make devpassport such a great tool for the open-source community.
 
 We welcome all contributions—from bug reports to new features, documentation improvements, and beyond. This document will guide you through our standard workflow.
 
